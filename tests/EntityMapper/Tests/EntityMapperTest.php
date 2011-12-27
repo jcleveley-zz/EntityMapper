@@ -1,6 +1,8 @@
 <?php
 
-class BBC_News_Utils_BBC_News_Utils_EntityMapperTest extends PHPUnit_Framework_TestCase
+use EntityMapper\Mapper;
+
+class MapperTest extends PHPUnit_Framework_TestCase
 {
 
     public function setup()
@@ -38,7 +40,7 @@ class BBC_News_Utils_BBC_News_Utils_EntityMapperTest extends PHPUnit_Framework_T
             ),
         );
 
-        $this->mapper = new BBC_News_Utils_EntityMapper($this->map);
+        $this->mapper = new Mapper($this->map);
     }
 
     public function testSimpleProperties()
@@ -58,13 +60,13 @@ class BBC_News_Utils_BBC_News_Utils_EntityMapperTest extends PHPUnit_Framework_T
         $data['title'] = 'Esists in map';
         $data['body'] = 'not in map';
 
-        $mapper = new BBC_News_Utils_EntityMapper($map, false);
+        $mapper = new Mapper($map, false);
         $entity = $mapper->hydrate($data, 'Story');
 
         $this->assertNull($entity->getBody(), 'Should ignore non-mapped data');
         $this->assertEquals('Esists in map', $entity->getTitle());
 
-        $mapper = new BBC_News_Utils_EntityMapper($map, true);
+        $mapper = new Mapper($map, true);
         $entity = $mapper->hydrate($data, 'Story');
 
         $this->assertEquals('not in map', $entity->getBody(), 'Should set non-mapped properties');
@@ -112,7 +114,7 @@ class BBC_News_Utils_BBC_News_Utils_EntityMapperTest extends PHPUnit_Framework_T
             }
         };
         $this->data['relatedStory'] = array('type' => 'LEP', 'channelId' => 'ash-cloud');
-        $this->mapper = new BBC_News_Utils_EntityMapper($this->map);
+        $this->mapper = new Mapper($this->map);
 
         $entity = $this->mapper->hydrate($this->data, 'Story');
         $this->assertTrue($entity->getRelatedStory() instanceof LiveEvent, 'Should call _new if present');
@@ -126,7 +128,7 @@ class BBC_News_Utils_BBC_News_Utils_EntityMapperTest extends PHPUnit_Framework_T
     public function testBadCallableCreation()
     {
         $this->map['Story']['_new'] = 'this is not callable!';
-        $this->mapper = new BBC_News_Utils_EntityMapper($this->map);
+        $this->mapper = new Mapper($this->map);
 
         $entity = $this->mapper->hydrate($this->data, 'Story');
 
@@ -137,7 +139,7 @@ class BBC_News_Utils_BBC_News_Utils_EntityMapperTest extends PHPUnit_Framework_T
     {
         $this->map['Story']['date'] = array('name' => 'date', 'class' => 'DateTime');
         $this->data['date'] = '2011-11-07T14:40:40+00:00';
-        $this->mapper = new BBC_News_Utils_EntityMapper($this->map);
+        $this->mapper = new Mapper($this->map);
 
         $entity = $this->mapper->hydrate($this->data, 'Story');
 
@@ -149,7 +151,7 @@ class BBC_News_Utils_BBC_News_Utils_EntityMapperTest extends PHPUnit_Framework_T
     {
         $this->map['Story']['date'] = array('name' => 'date', 'class' => 'DateTime');
         $this->data['date'] = 'thisisnotadate';
-        $this->mapper = new BBC_News_Utils_EntityMapper($this->map);
+        $this->mapper = new Mapper($this->map);
 
         $entity = $this->mapper->hydrate($this->data, 'Story');
         $this->assertNull($entity->getDate());

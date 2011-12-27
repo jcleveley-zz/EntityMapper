@@ -11,7 +11,12 @@
  * @todo Isn't very OO currently data etc gets passed around
  */
 
-class BBC_News_Utils_EntityMapper
+namespace EntityMapper;
+
+use ReflectionClass;
+use Exception;
+
+class Mapper
 {
     /**
      * @var Array Map describing class meta
