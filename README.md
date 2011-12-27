@@ -1,0 +1,1 @@
+https://secure.travis-ci.org/jcleveley/EntityMapper.png
