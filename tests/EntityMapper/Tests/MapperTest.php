@@ -92,7 +92,8 @@ class MapperTest extends PHPUnit_Framework_TestCase
 
         //test depth 1
         $this->AssertTrue(is_array($entity->getImages()), 'Should create an array of objects');
-        $image = array_pop($entity->getImages());
+        $images = $entity->getImages();
+        $image = array_pop($images);
         $this->AssertTrue(
             $image instanceof Image,
             'Should create nested object of right class'
