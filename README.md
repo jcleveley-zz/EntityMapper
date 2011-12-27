@@ -27,6 +27,7 @@ $map = array(
 ```
 
 ```php
+<?php
 // Target custom classes ...
 
 class Story
@@ -55,12 +56,13 @@ class Image
 ```
 
 ```php
-        $data = array(
-            'title' => 'Once upon a time',
-            'contents' => 'Here we go .... the end',
-            'authors' => array('John', 'Frank'),
-            'thumbnail' => array('href' => 'http://foo.com', 'alt' => 'nice pic'),
-            'images' => array(array('href' => 'http://foo.com', 'alt' => 'nice pic')),
-            'relatedStory' => array('title' => 'A title', 'body' => 'contents here')
-        );
-```        
+<?php
+$data = array(
+    'title' => 'Once upon a time',
+    'contents' => 'Here we go .... the end',
+    'authors' => array('John', 'Frank'),
+    'thumbnail' => array('href' => 'http://foo.com', 'alt' => 'nice pic'),
+    'images' => array(array('href' => 'http://foo.com', 'alt' => 'nice pic')),
+    'relatedStory' => array('title' => 'A title', 'body' => 'contents here')
+);
+```
