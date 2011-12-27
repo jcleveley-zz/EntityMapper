@@ -8,6 +8,9 @@ The mapper knows what to map each array element to by providing an array map.
 
 ```php
 <?php
+
+// Map instructions ...
+
 $map = array(
     'Story' =>array(
 	    'title' => array('name' => 'title'),
@@ -22,3 +25,42 @@ $map = array(
 	)
 );
 ```
+
+```php
+// Target custom classes ...
+
+class Story
+{
+    protected $title;
+    protected $body;
+    protected $thumbnail;
+    protected $images;
+    protected $authors;
+    protected $media;
+    protected $date;
+    protected $relatedStory;
+
+    // Getters and setters ...
+}
+
+class Image
+{
+    protected $href;
+    protected $alt;
+
+    // Getters and setters ...
+}
+
+
+```
+
+```php
+        $data = array(
+            'title' => 'Once upon a time',
+            'contents' => 'Here we go .... the end',
+            'authors' => array('John', 'Frank'),
+            'thumbnail' => array('href' => 'http://foo.com', 'alt' => 'nice pic'),
+            'images' => array(array('href' => 'http://foo.com', 'alt' => 'nice pic')),
+            'relatedStory' => array('title' => 'A title', 'body' => 'contents here')
+        );
+```        
