@@ -39,3 +39,20 @@ foreach ($tweets as $tweet) {
     echo "\n ---> " . $tweet->getText();
 }
 ```
+
+```
+Daniel Chandra - Wednesday 28th of December 2011 
+ ---> RT @simplepassing: Cant wait for next (year) London derby, West Ham vs Chelsea :p RT @TruebluesIndo: *uhuk adminnya westham toh, ngeri juga kaya hooligan NYA
+
+The Insider - Wednesday 28th of December 2011 
+ ---> MikeJonesWaPo: Lorenzo Alexander and London Fletcher both have been told they are alternates for the Pro Bowl. #REdskins
+
+Frances Neaves - Wednesday 28th of December 2011 
+ ---> I want to keep those apron strings attached that little bit longer but admit she's growing up fast! Waiting for her to come home from London
+
+Yuanyuan Fei - Wednesday 28th of December 2011 
+ ---> I'm at Santander (Harewood Place, London) http://t.co/cSxt0S3X
+
+Gusti Albidi - Wednesday 28th of December 2011 
+ ---> Gondrong - london - paris - new york - denpasar - rajaampat - gondrong haha RT @rahmahanawati1: hhheheheh iya dch iya... lburan
+```
