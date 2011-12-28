@@ -6,6 +6,13 @@ The entity mapper class is used to hydrate an array of data, usually from json_d
 
 To map the array to PHP objects you need to provide a map describing how the data should be transformed,
 
+## Features
+
+* Leaves your objects alone - no base clases etc
+* Can hydrate nested objects and arrays
+
+## Example
+
 ```php
 <?php
 
@@ -39,7 +46,7 @@ foreach ($tweets as $tweet) {
     echo "\n ---> " . $tweet->getText();
 }
 ```
-
+### Result:
 ```
 Daniel Chandra - Wednesday 28th of December 2011 
  ---> RT @simplepassing: Cant wait for next (year) London derby, West Ham vs Chelsea :p RT @TruebluesIndo: *uhuk adminnya westham toh, ngeri juga kaya hooligan NYA
