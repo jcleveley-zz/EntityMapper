@@ -2,67 +2,40 @@
 
 # Entity Mapper
 
-The entity mapper is used to transform an array of data, usually from json_decode via a web service, to nested PHP objects.
+The entity mapper class is used to hydrate an array of data, usually from json_decode via a web service, to nested PHP objects.
 
-The mapper knows what to map each array element to by providing an array map.
+To map the array to PHP objects you need to provide a map describing how the data should be transformed,
 
 ```php
 <?php
 
-// Map instructions ...
+require_once  __DIR__.'/../src/EntityMapper/Mapper.php';
+require_once  __DIR__.'/Tweet.php';
 
+use EntityMapper\mapper;
+
+// Fetch the data
+$contents = file_get_contents('http://search.twitter.com/search.json?q=london&rpp=5');
+$tweetsContainer = json_decode($contents, true);
+
+
+// Provide the mapping
 $map = array(
-    'Story' =>array(
-	    'title' => array('name' => 'title'),
-	    'contents' => array('name' => 'body'),
-	    'authors' => array('name' => 'authors'),
-	    'images' => array('name' => 'images', 'depth' => 1, 'class' => 'Image'),
-	    'relatedStory' => array('name' => 'relatedStory', 'class' => 'Story')
-	),
-	'Image' => array(
-	    'href' => array('name' => 'href'),
-	    'alt' => array('name' => 'alt')
-	)
+    'Tweet' => array(
+        'from_user_name' => array('name' => 'userName'),
+        'created_at' => array('name' => 'createdAt', 'class' => 'DateTime')
+    )
 );
-```
 
-```php
-<?php
-// Target custom classes ...
+// Create the mapper - seting the mapper to automatically set properties of the same name
+$mapper = new Mapper($map, true);
 
-class Story
-{
-    protected $title;
-    protected $body;
-    protected $thumbnail;
-    protected $images;
-    protected $authors;
-    protected $media;
-    protected $date;
-    protected $relatedStory;
+// Hydrate the twitter data to 'Tweet' objects at a depth of 1
+$tweets = $mapper->hydrate($tweetsContainer['results'], 'Tweet', 1);
 
-    // Getters and setters ...
+// Use the new objects
+foreach ($tweets as $tweet) {
+    echo "\n\n" . $tweet->getUserName() . ' - ' . $tweet->getCreatedAt() ;
+    echo "\n ---> " . $tweet->getText();
 }
-
-class Image
-{
-    protected $href;
-    protected $alt;
-
-    // Getters and setters ...
-}
-
-
-```
-
-```php
-<?php
-$data = array(
-    'title' => 'Once upon a time',
-    'contents' => 'Here we go .... the end',
-    'authors' => array('John', 'Frank'),
-    'thumbnail' => array('href' => 'http://foo.com', 'alt' => 'nice pic'),
-    'images' => array(array('href' => 'http://foo.com', 'alt' => 'nice pic')),
-    'relatedStory' => array('title' => 'A title', 'body' => 'contents here')
-);
 ```

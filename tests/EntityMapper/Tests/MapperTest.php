@@ -157,14 +157,12 @@ class MapperTest extends PHPUnit_Framework_TestCase
 
         $entity = $this->mapper->hydrate($this->data, 'Story');
         $this->assertNull($entity->getDate());
-    }    
-
+    }
 
 }
 
 class Story
 {
-
     protected $title;
     protected $body;
     protected $thumbnail;
