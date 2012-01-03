@@ -50,11 +50,10 @@ class Mapper
     {
         // Maps to a PHP object - properties will be mapped including nested obj
         if (is_array($data) && $className && $depth == 0) {
-            $entity = $this->createEntity($data, $className, $lastStringKey);
-            $output = $this->updateEntity($data, $entity, $lastStringKey);
+            $output = $this->createEntity($data, $className, $lastStringKey);
         // Maps to an Array - classname and depth are carried forward for nested obj
         } elseif (is_array($data)) {
-            $output = $this->updateArray($data, array(), $className, $depth, $lastStringKey);
+            $output = $this->createArray($data, $className, $depth, $lastStringKey);
         // Maps to a PHP object - data will be injected into constructor
         } elseif (!is_array($data) && $className) {
             $output = $this->createInjectedEntity($data, $className);
@@ -72,24 +71,16 @@ class Mapper
      *
      * @param Mixed $data Subset of data
      * @param String $className
+     * @param String last string key in the array path
      */
     protected function createEntity($data, $className, $lastStringKey)
     {
-        if (isset($this->map[$className]['_new']) && is_callable($this->map[$className]['_new'])) {
-            return $this->map[$className]['_new']($data, $lastStringKey);
+        if ($facory = $this->getFactoryFunction($className)) {
+            $entity = $facory($data, $lastStringKey);
         } else {
-            return new $className;
+            $entity = new $className;
         }
-    }
 
-    /**
-     * Updates an object based on mapping
-     *
-     * @param Mixed $data Subset of data
-     * @param Obj $entity Object to be updated
-     */
-    protected function updateEntity($data, $entity, $lastStringKey)
-    {
         $className = get_class($entity);
         $reflClass = new ReflectionClass($className);
 
@@ -117,12 +108,13 @@ class Mapper
      * Depth gets reduced on every array level created
      *
      * @param Mixed $data Raw data
-     * @param Array $newArray
      * @param String $className Class anme of nested object(s)
      * @param Int $depth Number of levels until we can expect an object
+     * @param String last string key in the array path
      */
-    protected function updateArray($data, Array $newArray, $className, $depth, $lastStringKey)
+    protected function createArray($data, $className, $depth, $lastStringKey)
     {
+        $newArray = array();
         $depth--;
         foreach ($data as $key => $value) {
             $newArray[$key] = $this->hydrate($value, $className, $depth, $this->getStringKey($key, $lastStringKey));
@@ -156,6 +148,15 @@ class Mapper
         $fallback = ($this->allowAutoPropertySetting) ? array('name' => $key) : null;
 
         return isset($this->map[$className][$key]) ? $this->map[$className][$key] : $fallback;
+    }
+
+    protected function getFactoryFunction($className)
+    {
+        if (isset($this->map[$className]['_new']) && is_callable($this->map[$className]['_new'])) {
+            return $this->map[$className]['_new'];
+        } else {
+            return null;
+        }
     }
 
     protected function getDepth($field)
