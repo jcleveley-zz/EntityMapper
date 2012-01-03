@@ -1,14 +1,13 @@
 <?php
 
 /**
- * Class to trnsform array of data from nested arrays (json_decode) to PHP custom objects
+ * Class to transform array of data from nested arrays (json_decode) to PHP custom objects
  * based on a map describing the data structure. See unit test for usgae.
  *
- * @todo work at the top level - don't have to supply classname on first hydrate()
- * @todo performance? Can we use reflection? use public prop / set methods instead?
- * @todo flag in mapping for when we inject data into constructor e.g. DateTime --> when we need it
+ * @todo Im passing variables round like a crazy person but can't think of a better way to do it :(
+ * @todo Performance? Can we use reflection? use public prop / set methods instead?
+ * @todo Add flag in mapping for when we inject data into constructor e.g. DateTime curretly pretty dumb
  * @todo Max recursion_count ?
- * @todo Isn't very OO currently data etc gets passed around
  */
 
 namespace EntityMapper;
@@ -47,15 +46,15 @@ class Mapper
      * @param String $className class name of object which be used to hydrate
      * @param Int $depth (used during recursion) depth of target class within arrays
      */
-    public function hydrate($data, $className = null, $depth = 0)
+    public function hydrate($data, $className = null, $depth = 0, $lastStringKey = null)
     {
         // Maps to a PHP object - properties will be mapped including nested obj
         if (is_array($data) && $className && $depth == 0) {
-            $entity = $this->createEntity($data, $className);
-            $output = $this->updateEntity($data, $entity);
+            $entity = $this->createEntity($data, $className, $lastStringKey);
+            $output = $this->updateEntity($data, $entity, $lastStringKey);
         // Maps to an Array - classname and depth are carried forward for nested obj
         } elseif (is_array($data)) {
-            $output = $this->updateArray($data, array(), $className, $depth);
+            $output = $this->updateArray($data, array(), $className, $depth, $lastStringKey);
         // Maps to a PHP object - data will be injected into constructor
         } elseif (!is_array($data) && $className) {
             $output = $this->createInjectedEntity($data, $className);
@@ -74,10 +73,10 @@ class Mapper
      * @param Mixed $data Subset of data
      * @param String $className
      */
-    protected function createEntity($data, $className)
+    protected function createEntity($data, $className, $lastStringKey)
     {
         if (isset($this->map[$className]['_new']) && is_callable($this->map[$className]['_new'])) {
-            return $this->map[$className]['_new']($data);
+            return $this->map[$className]['_new']($data, $lastStringKey);
         } else {
             return new $className;
         }
@@ -89,20 +88,26 @@ class Mapper
      * @param Mixed $data Subset of data
      * @param Obj $entity Object to be updated
      */
-    protected function updateEntity($data, $entity)
+    protected function updateEntity($data, $entity, $lastStringKey)
     {
         $className = get_class($entity);
         $reflClass = new ReflectionClass($className);
 
         foreach ($data as $key => $value) {
             $field = $this->mapField($className, $key);
-            $this->setByReflection(
-                $this->hydrate($value, $this->getChildClass($field), $this->getDepth($field)),
-                $entity,
-                $this->getProperty($field),
-                // recursion !
-                $reflClass
+
+            $value = $this->hydrate(
+                $value,
+                $this->getChildClass($field),
+                $this->getDepth($field),
+                $this->getStringKey($key, $lastStringKey)
             );
+            $property = $this->getProperty($field);
+            if ($property && $reflClass->hasProperty($property)) {
+                $reflProp = $reflClass->getProperty($property);
+                $reflProp->setAccessible(true);
+                $reflProp->setValue($entity, $value);
+            }
         }
         return $entity;
     }
@@ -116,12 +121,11 @@ class Mapper
      * @param String $className Class anme of nested object(s)
      * @param Int $depth Number of levels until we can expect an object
      */
-    protected function updateArray($data, Array $newArray, $className = null, $depth = 0)
+    protected function updateArray($data, Array $newArray, $className, $depth, $lastStringKey)
     {
         $depth--;
         foreach ($data as $key => $value) {
-            // recursion !
-            $newArray[$key] = $this->hydrate($value, $className, $depth);
+            $newArray[$key] = $this->hydrate($value, $className, $depth, $this->getStringKey($key, $lastStringKey));
         }
         return $newArray;
     }
@@ -142,22 +146,9 @@ class Mapper
         }
     }
 
-    /**
-     * Sets object properties via Refflection so we can set private properties
-     *
-     * @param Mixed $value Value of property to be set
-     * @param Obj $entity Target object for setting properties
-     * @param String $property Property name to be set
-     * @param ReflectionClass $refClass Reflection class of entity - injected for performance
-     */
-    protected function setByReflection($value, $entity, $property, ReflectionClass $reflClass)
+    protected function getStringKey($key, $lastStringKey)
     {
-        if ($property && $reflClass->hasProperty($property)) {
-
-            $reflProp = $reflClass->getProperty($property);
-            $reflProp->setAccessible(true);
-            $reflProp->setValue($entity, $value);
-        }
+        return is_string($key) ? $key : $lastStringKey;
     }
 
     protected function mapField($className, $key)

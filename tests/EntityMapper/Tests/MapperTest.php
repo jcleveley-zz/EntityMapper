@@ -159,6 +159,40 @@ class MapperTest extends PHPUnit_Framework_TestCase
         $this->assertNull($entity->getDate());
     }
 
+    public function testObjectCreationBasedOnStringKey()
+    {
+        $createMediaObject = function($data, $lastStringKey) {
+            switch ($lastStringKey) {
+                case 'images':
+                    return new Image();
+                case 'videos':
+                    return new Video();
+            }
+        };
+
+        $map = array(
+            'Story' =>
+                array('media' => array('name' => 'media', 'depth' => 2, 'class' => 'Media')),
+            'Media' => array('_new' => $createMediaObject)
+        );
+
+        $data = array(
+            'media' => array(
+                'images' => array(array('href' => 'http://foo.com', 'alt' => 'nice pic')),
+                'videos' => array(array('type' => 'mp4'))
+            ),
+        );
+        $mapper = new Mapper($map, true);
+
+        $entity = $mapper->hydrate($data, 'Story');
+
+        $media = $entity->getMedia();
+
+        $this->assertTrue($media['images'][0] instanceof Image);
+        $this->assertTrue($media['videos'][0] instanceof Video);
+
+    }
+
 }
 
 class Story
@@ -231,6 +265,18 @@ class Image
     public function getAlt()
     {
         return $this->alt;
+    }
+
+}
+
+class Video
+{
+    protected $source;
+    protected $type;
+
+    public function getType()
+    {
+        return $this->type;
     }
 
 }
