@@ -48,18 +48,45 @@ foreach ($tweets as $tweet) {
 ```
 ### Result:
 ```
-Daniel Chandra - Wednesday 28th of December 2011 
+Daniel Chandra - Wednesday 28th of December 2011
  ---> RT @simplepassing: Cant wait for next (year) London derby, West Ham vs Chelsea :p RT @TruebluesIndo: *uhuk adminnya westham toh, ngeri juga kaya hooligan NYA
 
-The Insider - Wednesday 28th of December 2011 
+The Insider - Wednesday 28th of December 2011
  ---> MikeJonesWaPo: Lorenzo Alexander and London Fletcher both have been told they are alternates for the Pro Bowl. #REdskins
 
-Frances Neaves - Wednesday 28th of December 2011 
+Frances Neaves - Wednesday 28th of December 2011
  ---> I want to keep those apron strings attached that little bit longer but admit she's growing up fast! Waiting for her to come home from London
 
-Yuanyuan Fei - Wednesday 28th of December 2011 
+Yuanyuan Fei - Wednesday 28th of December 2011
  ---> I'm at Santander (Harewood Place, London) http://t.co/cSxt0S3X
 
-Gusti Albidi - Wednesday 28th of December 2011 
+Gusti Albidi - Wednesday 28th of December 2011
  ---> Gondrong - london - paris - new york - denpasar - rajaampat - gondrong haha RT @rahmahanawati1: hhheheheh iya dch iya... lburan
+```
+
+### Advaced Usage
+
+```php
+<?php
+// If you add a '_new' function to the map you can customise an object's creation.
+// The function is passed the data and last string array key which is usefiul for deciding what object to create.
+// So a complex array structure like array-Tweet-Entities-array['urls']-array-url can be hydrated pretty easily.
+
+$creatEntity = function($data, $lastStringKey) {
+    switch ($lastStringKey) {
+        case 'hashtags':
+            return new Hash;
+        case 'urls':
+            return new Url;
+    }
+};
+
+$map = array(
+    'Tweet' => array(
+        'from_user_name' => array('name' => 'userName'),
+        'created_at' => array('name' => 'createdAt', 'class' => 'DateTime'),
+        'entities'=> array('name' => 'entities', 'class' => 'Entity', 'depth' => 2)
+    ),
+    'Entity' => array('_new' => $creatEntity)
+);
 ```
