@@ -16,6 +16,7 @@ To map the array to PHP objects you need to provide a map describing how the dat
 ## Setup
 
 The constructor takes the raw data array and an allowAutoPropertySetting option - Whether a property with the same name as the data key should be auto set:
+
 * true: properties will be mapped automaically if they have the same name
 * false: you have to explicitly add properties to the map
 
@@ -24,6 +25,7 @@ The constructor takes the raw data array and an allowAutoPropertySetting option 
 The main way to control the hydration is through the mapping array. Each top level key corresponds to a PHP class and the value is an array consisting of the input data keys.
 
 Each input data key has an array to describe how to deal with it:
+
 * name: (string) The object property name the data will be mapped to.
 * class: (string) Name of the class to be mapped to (optional)
 * depth: (int) Depth of arrays until you reach the class you need to map
@@ -82,7 +84,7 @@ Gusti Albidi - Wednesday 28th of December 2011
  ---> Gondrong - london - paris - new york - denpasar - rajaampat - gondrong haha RT @rahmahanawati1: hhheheheh iya dch iya... lburan
 ```
 
-### Advaced Usage
+### Advanced Usage
 
 ```php
 <?php
