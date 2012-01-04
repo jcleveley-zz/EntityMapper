@@ -8,8 +8,26 @@ To map the array to PHP objects you need to provide a map describing how the dat
 
 ## Features
 
-* Leaves your objects alone - no base clases etc
-* Can hydrate nested objects and arrays
+* Provides a way to use bespoke objects rather than accessing a large array
+* Helps to keep all your business logic in domain models
+* No inheritance required on your objects
+* Can hydrate conplex / nested arrays
+
+## Setup
+
+The constructor takes the raw data array and an allowAutoPropertySetting option - Whether a property with the same name as the data key should be auto set:
+* true: properties will be mapped automaically if they have the same name
+* false: you have to explicitly add properties to the map
+
+## Mapping array
+
+The main way to control the hydration is through the mapping array. Each top level key corresponds to a PHP class and the value is an array consisting of the input data keys.
+
+Each input data key has an array to describe how to deal with it:
+* name: (string) The object property name the data will be mapped to.
+* class: (string) Name of the class to be mapped to (optional)
+* depth: (int) Depth of arrays until you reach the class you need to map
+* _new: (closure) Closure used to customise the creation of the new object - passed data and last string key.
 
 ## Example
 
@@ -72,7 +90,7 @@ Gusti Albidi - Wednesday 28th of December 2011
 // The function is passed the data and last string array key which is usefiul for deciding what object to create.
 // So a complex array structure like array-Tweet-Entities-array['urls']-array-url can be hydrated pretty easily.
 
-$creatEntity = function($data, $lastStringKey) {
+$createEntity = function($data, $lastStringKey) {
     switch ($lastStringKey) {
         case 'hashtags':
             return new Hash;
@@ -87,6 +105,6 @@ $map = array(
         'created_at' => array('name' => 'createdAt', 'class' => 'DateTime'),
         'entities'=> array('name' => 'entities', 'class' => 'Entity', 'depth' => 2)
     ),
-    'Entity' => array('_new' => $creatEntity)
+    'Entity' => array('_new' => $createEntity)
 );
 ```
