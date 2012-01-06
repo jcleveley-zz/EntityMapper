@@ -55,7 +55,7 @@ class Mapper
         } elseif (is_array($data)) {
             $output = $this->createArray($data, $className, $depth, $lastStringKey);
         // Maps to a PHP object - data will be injected into constructor
-        } elseif (!is_array($data) && $className) {
+        } elseif (!is_array($data) && $className && $depth == 0) {
             $output = $this->createInjectedEntity($data, $className);
         // Maps to normal variable
         } else {

@@ -193,6 +193,13 @@ class MapperTest extends PHPUnit_Framework_TestCase
 
     }
 
+    public function testNullDataWithDepth()
+    {
+        $this->data['media'] = null;
+        $entity = $this->mapper->hydrate($this->data, 'Story');
+        $this->assertNull($entity->getMedia());
+    }
+
 }
 
 class Story
