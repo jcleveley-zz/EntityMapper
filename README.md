@@ -2,12 +2,13 @@
 
 # Entity Mapper
 
-The entity mapper is used to hydrate an array of data, usually from json_decode via a web service, to nested PHP objects.
+The entity mapper is used to hydrate an array of data, usually from json_decode via a web service, to custom nested PHP objects.
 
 To map the array to PHP objects you need to provide a map describing how the data should be transformed.
 
 ## Features
 
+* Simple way to transform raw data into your objects
 * Provides a way to use bespoke objects rather than accessing a large array
 * Helps to keep all your business logic in domain models
 * No inheritance required on your objects
@@ -77,7 +78,7 @@ Sometime the data you're interested in is nested within arrays. You can use the 
 
 ## _new function
 The _new function can be used to customise the creation of objects.
-The function is passed the raw child data and the last string which helps give it context.
+The function is passed the raw child data and the last key string which helps give it context.
 
 
 
