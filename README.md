@@ -2,9 +2,9 @@
 
 # Entity Mapper
 
-The entity mapper class is used to hydrate an array of data, usually from json_decode via a web service, to nested PHP objects.
+The entity mapper is used to hydrate an array of data, usually from json_decode via a web service, to nested PHP objects.
 
-To map the array to PHP objects you need to provide a map describing how the data should be transformed,
+To map the array to PHP objects you need to provide a map describing how the data should be transformed.
 
 ## Features
 
@@ -17,7 +17,7 @@ To map the array to PHP objects you need to provide a map describing how the dat
 
 The constructor takes the raw data array and an allowAutoPropertySetting option - Whether a property with the same name as the data key should be auto set:
 
-* true: properties will be mapped automaically if they have the same name
+* true: properties will be mapped automatically if they have the same name
 * false: you have to explicitly add properties to the map
 
 ## Mapping array
@@ -28,8 +28,6 @@ Each input data key has an array to describe how to deal with it:
 
 * name: (string) The object property name the data will be mapped to.
 * class: (string) Name of the class to be mapped to (optional)
-* depth: (int) Depth of arrays until you reach the class you need to map
-* _new: (closure) Closure used to customise the creation of the new object - passed data and last string key.
 
 ## Example
 
@@ -85,6 +83,15 @@ Gusti Albidi - Wednesday 28th of December 2011
 ```
 
 ### Advanced Usage
+
+## Depth property
+Sometime the data you're interested in is nested within arrays. You can use the depth property to tell the mapper to only hydrate at a certain nested level.
+
+## _new function
+The _new function can be used to customise the creation of objects.
+The function is passed the raw child data and the last string which helps give it context.
+
+
 
 ```php
 <?php
