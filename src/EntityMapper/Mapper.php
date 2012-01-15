@@ -76,7 +76,7 @@ class Mapper
     protected function createEntity($data, $className, $lastStringKey)
     {
         if ($facory = $this->getFactoryFunction($className)) {
-            $entity = $facory($data, $lastStringKey);
+            $entity = call_user_func($facory, $data, $lastStringKey);
         } else {
             $entity = new $className;
         }
