@@ -28,15 +28,27 @@ class Mapper
      *  true: properties will be mapped automaically if they have the same name
      *  false: you have to explicitly add properties to the map
      */
-    protected $allowAutoPropertySetting;
+    protected $allowAutoMapping;
+
+    /**
+     *  @var Bool
+     *  Whether setter methods should be used where posible. The seeter method
+     *  will then be used in preference to the property.
+     */
+
+    protected $allowMethodSetting;
 
     /**
      * @param Array $map Map describing class meta
      */
-    public function __construct(Array $map = array(), $allowAutoPropertySetting = false)
+    public function __construct(
+        Array $map = array(),
+        $allowAutoMapping = false,
+        $allowMethodSetting = false)
     {
         $this->map = $map;
-        $this->allowAutoPropertySetting = $allowAutoPropertySetting;
+        $this->allowAutoMapping = $allowAutoMapping;
+        $this->allowMethodSetting = $allowMethodSetting;
     }
 
     /**
@@ -93,11 +105,17 @@ class Mapper
                 $this->getDepth($field),
                 $this->getStringKey($key, $lastStringKey)
             );
-            $property = $this->getProperty($field);
-            if ($property && $reflClass->hasProperty($property)) {
-                $reflProp = $reflClass->getProperty($property);
-                $reflProp->setAccessible(true);
-                $reflProp->setValue($entity, $value);
+
+            $setter = $this->getSetter($field);
+            if($this->allowMethodSetting && is_callable(array($entity, $setter))) {
+                $entity->$setter($value);
+            } else {
+                $property = $this->getProperty($field);
+                if ($property && $reflClass->hasProperty($property)) {
+                    $reflProp = $reflClass->getProperty($property);
+                    $reflProp->setAccessible(true);
+                    $reflProp->setValue($entity, $value);
+                }
             }
         }
         return $entity;
@@ -145,7 +163,7 @@ class Mapper
 
     protected function mapField($className, $key)
     {
-        $fallback = ($this->allowAutoPropertySetting) ? array('name' => $key) : null;
+        $fallback = ($this->allowAutoMapping) ? array('name' => $key) : null;
 
         return isset($this->map[$className][$key]) ? $this->map[$className][$key] : $fallback;
     }
@@ -172,6 +190,11 @@ class Mapper
     protected function getProperty($field)
     {
         return isset($field['name']) ? $field['name'] : null;
+    }
+
+    protected function getSetter($field)
+    {
+        return 'set'.$this->getProperty($field);
     }
 
 }

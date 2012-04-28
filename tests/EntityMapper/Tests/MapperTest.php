@@ -200,6 +200,19 @@ class MapperTest extends PHPUnit_Framework_TestCase
         $this->assertNull($entity->getMedia());
     }
 
+    public function testSetterHydration()
+    {
+        $storyMeta = array(
+            'title' => array('name' => 'title'),
+        );
+        $mapper = new Mapper(array('Story' => $storyMeta), false, true);
+        $data = array('title' => 'once upon a time');
+
+        $entity = $mapper->hydrate($data, 'Story');
+
+        $this->assertEquals($entity->getTitle(), 'Once Upon A Time');
+    }
+
 }
 
 class Story
@@ -216,6 +229,11 @@ class Story
     public function getTitle()
     {
         return $this->title;
+    }
+
+    public function setTitle($title)
+    {
+        $this->title = ucwords($title);
     }
 
     public function getBody()
