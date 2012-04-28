@@ -64,7 +64,7 @@ class Mapper
         if (is_array($data) && $className && $depth == 0) {
             $output = $this->createEntity($data, $className, $lastStringKey);
         // Maps to an Array - classname and depth are carried forward for nested obj
-        } elseif (is_array($data)) {
+        } elseif (is_array($data) && $depth) {
             $output = $this->createArray($data, $className, $depth, $lastStringKey);
         // Maps to a PHP object - data will be injected into constructor
         } elseif (!is_array($data) && $className && $depth == 0) {
