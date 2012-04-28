@@ -2,11 +2,11 @@
 
 /**
  * Class to transform array of data from nested arrays (json_decode) to PHP custom objects
- * based on a map describing the data structure. See unit test for usgae.
+ * based on a map describing the data structure. See unit test for usage.
  *
- * @todo Im passing variables round like a crazy person but can't think of a better way to do it :(
- * @todo Performance? Can we use reflection? use public prop / set methods instead?
- * @todo Add flag in mapping for when we inject data into constructor e.g. DateTime curretly pretty dumb
+ * @todo I'm passing variables round like a crazy person but can't think of a better way to do it :(
+ * @todo Performance test?
+ * @todo Add flag in mapping for when we inject data into constructor e.g. DateTime currently pretty dumb
  * @todo Max recursion_count ?
  */
 
@@ -25,14 +25,14 @@ class Mapper
     /**
      *  @var Bool
      *  Whether a property with the same name as the data key should be auto set
-     *  true: properties will be mapped automaically if they have the same name
+     *  true: properties will be mapped automatically if they have the same name
      *  false: you have to explicitly add properties to the map
      */
     protected $allowAutoMapping;
 
     /**
      *  @var Bool
-     *  Whether setter methods should be used where posible. The seeter method
+     *  Whether setter methods should be used where possible. The setter method
      *  will then be used in preference to the property.
      */
 
@@ -87,8 +87,8 @@ class Mapper
      */
     protected function createEntity($data, $className, $lastStringKey)
     {
-        if ($facory = $this->getFactoryFunction($className)) {
-            $entity = call_user_func($facory, $data, $lastStringKey);
+        if ($factory = $this->getFactoryFunction($className)) {
+            $entity = call_user_func($factory, $data, $lastStringKey);
         } else {
             $entity = new $className;
         }
@@ -126,7 +126,7 @@ class Mapper
      * Depth gets reduced on every array level created
      *
      * @param Mixed $data Raw data
-     * @param String $className Class anme of nested object(s)
+     * @param String $className Class name of nested object(s)
      * @param Int $depth Number of levels until we can expect an object
      * @param String last string key in the array path
      */
