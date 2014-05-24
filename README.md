@@ -12,7 +12,7 @@ To map the array to PHP objects you need to provide a map describing how the dat
 * Provides a way to use bespoke objects rather than accessing a large array
 * Helps to keep all your business logic in domain models
 * No inheritance required on your objects
-* Can hydrate conplex / nested arrays
+* Can hydrate complex / nested arrays
 
 ## Setup
 
